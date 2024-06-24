@@ -1,9 +1,9 @@
 package com.example.shoppinglist.domain
 
 data class ShoppingItem(
+    val name: String,
     val count: Int,
     val enabled: Boolean,
-    val name: String,
     var id: Int = UNDEFINED_ID
 ){
     companion object{
