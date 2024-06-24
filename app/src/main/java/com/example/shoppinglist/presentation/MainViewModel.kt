@@ -17,13 +17,8 @@ class MainViewModel : ViewModel(){
     private val deleteShoppingItemUseCase = DeleteShoppingItemUseCase(repository)
     private val editingShoppingItemUseCase = EditingShoppingItemUseCase(repository)
 
-    private val _item = MutableLiveData<List<ShoppingItem>>()
-    val item: LiveData<List<ShoppingItem>>
-        get() = _item
+    val item = getShoppingListUseCase.getShoppingList()
 
-    init {
-        _item.value = getShoppingListUseCase.getShoppingList()
-    }
     fun deleteShoppingItem(shoppingItem: ShoppingItem) {
         deleteShoppingItemUseCase.deleteShoppingItem(shoppingItem)
     }
