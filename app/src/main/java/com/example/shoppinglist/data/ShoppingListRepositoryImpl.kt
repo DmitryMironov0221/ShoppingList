@@ -12,7 +12,7 @@ object ShoppingListRepositoryImpl : ShoppingListRepository {
     private var autoIncrementId = 0
 
     init {
-        for (i in 0 until 10) {
+        for (i in 0 until 100) {
             val item = ShoppingItem("Name $i", i, true)
             addShoppingItem(item)
         }
