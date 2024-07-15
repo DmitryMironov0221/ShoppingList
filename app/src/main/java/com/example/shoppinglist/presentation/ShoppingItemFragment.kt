@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +31,6 @@ class ShoppingItemFragment: Fragment() {
 
 
     override fun onAttach(context: Context) {
-        Log.d("ShoppingItemFragmenttttt","onAttach")
         super.onAttach(context)
         if (context is OnEditingFinishedListener){
             onEditingFinishedListener = context
@@ -46,63 +44,17 @@ class ShoppingItemFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("ShoppingItemFragmenttttt","onCreateView")
         return inflater.inflate(R.layout.fragment_shopping_item, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("ShoppingItemFragmenttttt","onViewCreated")
         parseParams()
         viewModel = ViewModelProvider(this)[ShoppingItemViewModel::class.java]
         initViews(view)
         addTextChangeListeners()
         launchRightMode()
         observeViewModel()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("ShoppingItemFragmenttttt","onStart")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("ShoppingItemFragmenttttt","onStop")
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("ShoppingItemFragmenttttt","onResume")
-
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("ShoppingItemFragmenttttt","onPause")
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.d("ShoppingItemFragmenttttt","onDestroyView")
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("ShoppingItemFragmenttttt","onDestroy")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        Log.d("ShoppingItemFragmenttttt","onDetach")
-
-    }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d("ShoppingItemFragmenttttt","onCreate")
-
     }
 
     private fun observeViewModel() {

@@ -22,16 +22,16 @@ object ShoppingListRepositoryImpl : ShoppingListRepository {
         shopListLD.value = shopList.toList()
     }
 
-    override fun addShoppingItem(shopItem: ShoppingItem) {
-        if (shopItem.id == ShoppingItem.UNDEFINED_ID) {
-            shopItem.id = autoIncrementId++
+    override fun addShoppingItem(shoppingItem: ShoppingItem) {
+        if (shoppingItem.id == ShoppingItem.UNDEFINED_ID) {
+            shoppingItem.id = autoIncrementId++
         }
-        shopList.add(shopItem)
+        shopList.add(shoppingItem)
         updateList()
     }
 
-    override fun deleteShoppingItem(shopItem: ShoppingItem) {
-        shopList.remove(shopItem)
+    override fun deleteShoppingItem(shoppingItem: ShoppingItem) {
+        shopList.remove(shoppingItem)
         updateList()
     }
 
@@ -41,10 +41,10 @@ object ShoppingListRepositoryImpl : ShoppingListRepository {
         addShoppingItem(shoppingItem)
     }
 
-    override fun getShoppingItem(shopItemId: Int): ShoppingItem {
+    override fun getShoppingItem(shoppingItemId: Int): ShoppingItem {
         return shopList.find {
-            it.id == shopItemId
-        } ?: throw RuntimeException("Element with id $shopItemId not found")
+            it.id == shoppingItemId
+        } ?: throw RuntimeException("Element with id $shoppingItemId not found")
     }
 
     override fun getShoppingList(): LiveData<List<ShoppingItem>> {
