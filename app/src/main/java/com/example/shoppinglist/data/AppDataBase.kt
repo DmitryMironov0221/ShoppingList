@@ -12,16 +12,16 @@ abstract class AppDataBase : RoomDatabase(){
 
     companion object {
 
-        private var INSTANCE: AppDataBase? = null
-        private val LOCK = Any()
+        private var INSTANCE: AppDataBase? = null// переменная для хранения единственного объекта бд
+        private val LOCK = Any() // переменная для блокировки одновременного обращения к бд из разных потоков
         private const val DB_NAME = "shop_item.db"
 
-        fun getInstance(application: Application) : AppDataBase{
-            synchronized(LOCK){
-                INSTANCE?.let {
+        fun getInstance(application: Application) : AppDataBase{// метод для получения единственного объекта бд
+            synchronized(LOCK){// блокировка для предотвращения одновременного обращения к бд из разных потоков
+                INSTANCE?.let { // проверка на null для предотвращения повторного создания объекта бд
                     return it
                 }
-                val db = Room.databaseBuilder(
+                val db = Room.databaseBuilder(// создание объекта бд
                     application,
                     AppDataBase::class.java,
                     DB_NAME
