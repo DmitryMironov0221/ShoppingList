@@ -1,16 +1,23 @@
 package com.example.shoppinglist.presentation
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.shoppinglist.data.ShoppingListRepositoryImpl
 import com.example.shoppinglist.domain.AddShoppingItemUseCase
 import com.example.shoppinglist.domain.EditingShoppingItemUseCase
 import com.example.shoppinglist.domain.GetShoppingItemUseCase
 import com.example.shoppinglist.domain.ShoppingItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
-class ShoppingItemViewModel: ViewModel() {
-    private val repository = ShoppingListRepositoryImpl
+class ShoppingItemViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = ShoppingListRepositoryImpl(application)
 
     private val getShoppingItemUseCase = GetShoppingItemUseCase(repository)
     private val addShoppingItemUseCase = AddShoppingItemUseCase(repository)
@@ -30,70 +37,82 @@ class ShoppingItemViewModel: ViewModel() {
         get() = _shouldCloseScreen
 
 
-    fun getShoppingItem(shoppingItemId : Int){
-        val item = getShoppingItemUseCase.getShoppingItem(shoppingItemId)
-        _shoppingItem.value = item
-    }
-
-    fun addShoppingItem(inputName: String?, inputCount: String?){
-        val name = parseName(inputName)
-        val count = parseCount(inputCount)
-        val fieldsValid = validateInput(name, count)
-        if (fieldsValid){
-            val shoppingItem = ShoppingItem(name,count,true)
-            addShoppingItemUseCase.addShoppingItem(shoppingItem)
-            finishWork()
+    fun getShoppingItem(shoppingItemId: Int) {
+        viewModelScope.launch {// viewModelScope.launch запускает корутину, которая будет выполняться в фоновом потоке
+            val item = getShoppingItemUseCase.getShoppingItem(shoppingItemId)
+            _shoppingItem.value = item
         }
 
     }
 
-    fun editShoppingItem(inputName: String?, inputCount: String?){
+    fun addShoppingItem(inputName: String?, inputCount: String?) {
         val name = parseName(inputName)
         val count = parseCount(inputCount)
         val fieldsValid = validateInput(name, count)
-        if (fieldsValid){
-            _shoppingItem.value?.let {
-                val item = it.copy(name= name, count= count)
-                editShoppingItemUseCase.editingShoppingItem(item)
+        viewModelScope.launch {// viewModelScope.launch запускает корутину, которая будет выполняться в фоновом потоке
+            if (fieldsValid) {
+                val shoppingItem = ShoppingItem(name, count, true)
+                addShoppingItemUseCase.addShoppingItem(shoppingItem)
                 finishWork()
             }
-
         }
+
+
     }
 
-    private fun parseName(inputName: String?):String{
+    fun editShoppingItem(inputName: String?, inputCount: String?) {
+        val name = parseName(inputName)
+        val count = parseCount(inputCount)
+        val fieldsValid = validateInput(name, count)
+        viewModelScope.launch {// viewModelScope.launch запускает корутину, которая будет выполняться в фоновом потоке
+            if (fieldsValid) {
+                _shoppingItem.value?.let {
+                    val item = it.copy(name = name, count = count)
+                    editShoppingItemUseCase.editingShoppingItem(item)
+                    finishWork()
+                }
+
+            }
+        }
+
+    }
+
+    private fun parseName(inputName: String?): String {
         return inputName?.trim() ?: "" // эта запись означает, что если inputName не равно null то
-    // обрезаем пробелы, а если там null, то ставим пустую строку
+        // обрезаем пробелы, а если там null, то ставим пустую строку
     }
 
-    private fun parseCount(inputCount: String?) : Int{
+    private fun parseCount(inputCount: String?): Int {
         return try {
             inputCount?.trim()?.toInt() ?: 0
-        }catch (e : Exception){
+        } catch (e: Exception) {
             0
         }
     }
 
-    private fun validateInput(name : String, count: Int) : Boolean{
+    private fun validateInput(name: String, count: Int): Boolean {
         var result = true
         if (name.isBlank()) {
             _errorInputName.value = true
             result = false
         }
-        if (count <= 0){
+        if (count <= 0) {
             _errorInputCount.value = true
             result = false
         }
         return result
     }
 
-    fun resetErrorInputName(){
+
+    fun resetErrorInputName() {
         _errorInputName.value = false
     }
-    fun resetErrorInputCount(){
+
+    fun resetErrorInputCount() {
         _errorInputCount.value = false
     }
-    private fun finishWork(){
+
+    private fun finishWork() {
         _shouldCloseScreen.value = Unit
     }
 }
